@@ -1,14 +1,109 @@
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
+
 const github = 'https://github.com/MarcosDRojas'
 const linkedin = 'https://www.linkedin.com/in/marcosdanielrojas/'
 const email = 'marcos.rojas24@gmail.com'
+const githubUsername = 'MarcosDRojas'
+
+const careerStart = new Date(2020, 5, 1) // Software Engineer I started June 2020
+
+const yearsExperience = computed(() => {
+  const now = new Date()
+  let years = now.getFullYear() - careerStart.getFullYear()
+  const hadAnniversary =
+    now.getMonth() > careerStart.getMonth() ||
+    (now.getMonth() === careerStart.getMonth() && now.getDate() >= careerStart.getDate())
+  if (!hadAnniversary) years -= 1
+  return years
+})
+
+const stats = computed(() => [
+  { value: `${yearsExperience.value}+`, label: 'years experience' },
+  { value: '2', label: 'platform migrations led' },
+  { value: '1000s', label: 'users served at market hours' },
+])
+
+const nowItems = [
+  { label: 'building', text: 'Add what you’re currently building' },
+  { label: 'learning', text: 'Add a skill or technology you’re exploring' },
+  { label: 'focus', text: 'Add your current focus area' },
+]
+
+interface ContributionDay {
+  date: string
+  count: number
+  level: number
+}
+
+const activityLoading = ref(true)
+const activityError = ref(false)
+const totalContributions = ref(0)
+const days = ref<ContributionDay[]>([])
+
+const PAD: ContributionDay = { date: '', count: -1, level: -1 }
+
+const weeks = computed(() => {
+  const firstDay = days.value[0]
+  if (!firstDay) return []
+  const result: ContributionDay[][] = []
+  let week: ContributionDay[] = []
+  const firstWeekday = new Date(`${firstDay.date}T00:00:00`).getDay()
+  for (let i = 0; i < firstWeekday; i++) week.push(PAD)
+  for (const day of days.value) {
+    week.push(day)
+    if (week.length === 7) {
+      result.push(week)
+      week = []
+    }
+  }
+  if (week.length) result.push(week)
+  return result
+})
+
+const monthLabels = computed(() =>
+  weeks.value.map((week) => {
+    const firstReal = week.find((d) => d.count >= 0)
+    if (!firstReal) return ''
+    const date = new Date(`${firstReal.date}T00:00:00`)
+    return date.getDate() <= 7 ? date.toLocaleDateString('en-US', { month: 'short' }) : ''
+  }),
+)
+
+const heatColors = ['var(--heat-0)', 'var(--heat-1)', 'var(--heat-2)', 'var(--heat-3)', 'var(--heat-4)']
+const levelColor = (level: number) => heatColors[level] ?? 'transparent'
+
+function tooltipFor(day: ContributionDay) {
+  if (day.count < 0) return ''
+  const date = new Date(`${day.date}T00:00:00`)
+  const label = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  const contribLabel = day.count === 1 ? '1 contribution' : `${day.count} contributions`
+  return `${contribLabel} on ${label}`
+}
+
+onMounted(async () => {
+  try {
+    const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${githubUsername}?y=last`)
+    if (!res.ok) throw new Error('request failed')
+    const data = await res.json()
+    days.value = data.contributions
+    totalContributions.value = Object.values(data.total as Record<string, number>).reduce(
+      (sum, n) => sum + n,
+      0,
+    )
+  } catch {
+    activityError.value = true
+  } finally {
+    activityLoading.value = false
+  }
+})
 
 const experience = [
   {
     role: 'Software Engineer II',
     company: 'Charles Schwab',
     location: 'Raleigh, NC',
-    period: 'April 2023 — Present',
+    period: '2023-04 → present',
     bullets: [
       'Improved code quality by using test-driven development and SOLID principles.',
       'Led migration of multiple repositories from Bitbucket to GitHub, driving adoption of modern CI/CD workflows and improving team collaboration practices.',
@@ -27,28 +122,28 @@ const experience = [
     role: 'Software Engineer I',
     company: 'Charles Schwab',
     location: 'Raleigh, NC',
-    period: 'June 2020 — April 2023',
+    period: '2020-06 → 2023-04',
     bullets: [],
   },
 ]
 
-const skills = [
-  { label: 'Languages', items: 'C#, .NET, SQL' },
-  { label: 'Databases', items: 'MongoDB, Aerospike, PostgreSQL' },
-  { label: 'Cloud & DevOps', items: 'PCF, GitHub CI/CD, Splunk' },
-  { label: 'Tools', items: 'Visual Studio, Rider, VS Code, Git' },
-  { label: 'Frameworks', items: 'Blazor' },
-  { label: 'AI / Dev Productivity', items: 'MCP Servers, AI Agents, GitHub Copilot' },
+const skillGroups = [
+  { label: 'Languages', items: ['C#', '.NET', 'SQL'] },
+  { label: 'Databases', items: ['MongoDB', 'Aerospike', 'PostgreSQL'] },
+  { label: 'Cloud & DevOps', items: ['PCF', 'GitHub CI/CD', 'Splunk'] },
+  { label: 'Tools', items: ['Visual Studio', 'Rider', 'VS Code', 'Git'] },
+  { label: 'Frameworks', items: ['Blazor'] },
+  { label: 'AI / Dev Productivity', items: ['MCP Servers', 'AI Agents', 'GitHub Copilot'] },
 ]
 
 const projects = [
   {
-    name: 'Blockchain Ledger',
+    name: 'blockchain-ledger',
     description:
       'Built a blockchain-inspired ledger system to track peer-to-peer money transfers, focusing on immutability, hashing, and transaction validation.',
   },
   {
-    name: 'Lineage UI',
+    name: 'lineage-ui',
     description:
       'Developed a Blazor-based internal tool to manage service account permissions across lower and production environments, improving access visibility and security auditing.',
   },
@@ -56,243 +151,709 @@ const projects = [
 </script>
 
 <template>
-  <main class="page">
-    <section class="hero">
-      <img class="avatar" src="/images/profile.jpg" alt="Marcos Rojas" width="112" height="112" />
-      <h1>Marcos Rojas</h1>
-      <p class="title">Software Engineer II</p>
+  <div class="shell">
+    <div class="feed">
+      <img class="feed-img" src="/images/profile.jpg" alt="Marcos Rojas" />
+      <div class="feed-vignette"></div>
+      <div class="feed-card">
+        <p class="feed-prompt"><span class="dot"></span> status: open to opportunities</p>
+        <h1 class="feed-name">marcos<span class="caret">@</span>rojas</h1>
+        <p class="feed-title">Software Engineer II</p>
+        <nav class="feed-socials">
+          <a :href="github" target="_blank" rel="noopener">github</a>
+          <a :href="linkedin" target="_blank" rel="noopener">linkedin</a>
+          <a :href="`mailto:${email}`">email</a>
+        </nav>
+      </div>
+    </div>
+
+    <main class="content">
       <p class="bio">
-        Back end software engineer with 5+ years of experience designing, implementing, and
-        testing applications across the stack. Expertise in C#/.NET development in the financial
-        space.
+        Back end software engineer with {{ yearsExperience }}+ years of experience designing,
+        implementing, and testing applications across the stack. Expertise in C#/.NET development
+        in the financial space.
       </p>
 
-      <nav class="socials">
-        <a :href="github" target="_blank" rel="noopener">GitHub</a>
-        <a :href="linkedin" target="_blank" rel="noopener">LinkedIn</a>
-        <a :href="`mailto:${email}`">Email</a>
-      </nav>
-    </section>
-
-    <section class="section">
-      <h2>Experience</h2>
-      <div v-for="job in experience" :key="job.period" class="job">
-        <div class="job-header">
-          <div>
-            <span class="job-role">{{ job.role }}</span>
-            <span class="job-company"> · {{ job.company }}</span>
-          </div>
-          <span class="job-period">{{ job.period }}</span>
+      <div class="stats">
+        <div v-for="stat in stats" :key="stat.label" class="stat">
+          <span class="stat-value">{{ stat.value }}</span>
+          <span class="stat-label">{{ stat.label }}</span>
         </div>
-        <p class="job-location">{{ job.location }}</p>
-        <ul v-if="job.bullets.length" class="job-bullets">
-          <li v-for="bullet in job.bullets" :key="bullet">{{ bullet }}</li>
-        </ul>
       </div>
-    </section>
 
-    <section class="section">
-      <h2>Skills</h2>
-      <dl class="skills">
-        <template v-for="skill in skills" :key="skill.label">
-          <dt>{{ skill.label }}</dt>
-          <dd>{{ skill.items }}</dd>
-        </template>
-      </dl>
-    </section>
+      <div class="content-columns">
+        <aside class="content-side">
+          <section class="section">
+            <h2 class="section-head">&lt;<span>now</span>&gt;</h2>
+            <ul class="now-list">
+              <li v-for="item in nowItems" :key="item.label">
+                <span class="now-label">{{ item.label }}</span>
+                <span class="now-text">{{ item.text }}</span>
+              </li>
+            </ul>
+          </section>
 
-    <section class="section">
-      <h2>Projects</h2>
-      <div class="projects">
-        <article v-for="project in projects" :key="project.name" class="project">
-          <h3>{{ project.name }}</h3>
-          <p>{{ project.description }}</p>
-        </article>
+          <section class="section">
+            <h2 class="section-head">&lt;<span>skills</span>&gt;</h2>
+            <div v-for="group in skillGroups" :key="group.label" class="chip-group">
+              <span class="chip-label">{{ group.label }}</span>
+              <div class="chip-row">
+                <span v-for="item in group.items" :key="item" class="chip">{{ item }}</span>
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <div class="content-main">
+          <section class="section">
+            <h2 class="section-head">&lt;<span>experience</span>_log&gt;</h2>
+            <div class="log">
+              <div v-for="job in experience" :key="job.period" class="entry">
+                <p class="timestamp">{{ job.period }}</p>
+                <p class="role">{{ job.role }} <span class="company">· {{ job.company }}</span></p>
+                <p class="location">{{ job.location }}</p>
+                <ul v-if="job.bullets.length" class="bullets">
+                  <li v-for="bullet in job.bullets" :key="bullet">{{ bullet }}</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2 class="section-head">&lt;<span>activity</span>_feed&gt;</h2>
+            <p v-if="activityLoading" class="activity-status">loading contribution history…</p>
+            <p v-else-if="activityError" class="activity-status">activity feed unavailable</p>
+            <template v-else>
+              <p class="activity-total">{{ totalContributions }} contributions in the last year</p>
+              <div class="heatmap">
+                <div class="heatmap-months">
+                  <span v-for="(label, wi) in monthLabels" :key="wi" class="heatmap-month">{{ label }}</span>
+                </div>
+                <div
+                  class="heatmap-grid"
+                  role="img"
+                  :aria-label="`GitHub contribution heatmap, ${totalContributions} contributions in the last year`"
+                >
+                  <div v-for="(week, wi) in weeks" :key="wi" class="heatmap-week">
+                    <div
+                      v-for="(day, di) in week"
+                      :key="di"
+                      class="heatmap-cell"
+                      :class="{ 'is-pad': day.count < 0 }"
+                      :style="{ background: day.count < 0 ? 'transparent' : levelColor(day.level) }"
+                      :data-tooltip="tooltipFor(day)"
+                      :tabindex="day.count < 0 ? -1 : 0"
+                      :aria-hidden="day.count < 0"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div class="heatmap-legend">
+                <span>Less</span>
+                <span
+                  v-for="level in [0, 1, 2, 3, 4]"
+                  :key="level"
+                  class="legend-swatch"
+                  :style="{ background: levelColor(level) }"
+                ></span>
+                <span>More</span>
+              </div>
+            </template>
+          </section>
+
+          <section class="section">
+            <h2 class="section-head">&lt;<span>projects</span>&gt;</h2>
+            <div class="projects">
+              <article v-for="project in projects" :key="project.name" class="project">
+                <h3>{{ project.name }}</h3>
+                <p>{{ project.description }}</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2 class="section-head">&lt;<span>education</span>&gt;</h2>
+            <p class="edu-school">North Carolina State University</p>
+            <p class="edu-detail">B.S. Computer Science · 2017 — 2020 · GPA 3.7/4.0</p>
+          </section>
+
+          <footer class="footer">
+            <nav class="footer-socials">
+              <a :href="github" target="_blank" rel="noopener">github</a>
+              <a :href="linkedin" target="_blank" rel="noopener">linkedin</a>
+              <a :href="`mailto:${email}`">email</a>
+            </nav>
+            <p class="copy">marcos.rojas24 — durham, nc</p>
+          </footer>
+        </div>
       </div>
-    </section>
-
-    <section class="section">
-      <h2>Education</h2>
-      <p class="edu-school">North Carolina State University, Raleigh NC</p>
-      <p class="edu-detail">Bachelor of Science in Computer Science · 2017 — 2020 · GPA 3.7/4.0</p>
-    </section>
-
-    <footer class="footer">
-      <nav class="socials">
-        <a :href="github" target="_blank" rel="noopener">GitHub</a>
-        <a :href="linkedin" target="_blank" rel="noopener">LinkedIn</a>
-        <a :href="`mailto:${email}`">Email</a>
-      </nav>
-      <p class="copyright">Marcos Rojas · Durham, NC</p>
-    </footer>
-  </main>
+    </main>
+  </div>
 </template>
 
 <style scoped>
-.page {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 4rem 1.5rem 3rem;
+.shell {
+  display: grid;
+  grid-template-columns: minmax(300px, 38%) 1fr;
+  min-height: 100vh;
 }
 
-.hero {
-  text-align: center;
-  margin-bottom: 3.5rem;
+/* ---------------- left: photo / feed panel ---------------- */
+.feed {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+  border-right: 1px solid var(--sys-panel-border);
 }
 
-.avatar {
-  border-radius: 50%;
+.feed-img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  margin-bottom: 1.25rem;
+  object-position: center 20%;
+  filter: grayscale(0.45) contrast(1.08) brightness(0.88) saturate(1.05);
 }
 
-.hero h1 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--color-heading);
-  margin-bottom: 0.25rem;
+.feed-vignette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(6, 10, 14, 0.95) 0%,
+    rgba(6, 10, 14, 0.15) 42%,
+    rgba(6, 10, 14, 0.35) 100%
+  );
+  pointer-events: none;
 }
 
-.title {
-  font-size: 1rem;
-  color: var(--color-text-soft);
-  margin-bottom: 1rem;
+.feed-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.75rem 1.5rem 1.75rem;
+}
+
+.feed-prompt {
+  font-family: var(--sys-mono);
+  font-size: 0.72rem;
+  color: var(--sys-good);
+  margin: 0 0 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.feed-prompt .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sys-good);
+  flex-shrink: 0;
+}
+
+.feed-name {
+  font-family: var(--sys-mono);
+  font-size: 1.7rem;
+  font-weight: 600;
+  margin: 0 0 0.3rem;
+  text-wrap: balance;
+  color: #fff;
+}
+
+.feed-name .caret {
+  color: var(--sys-amber);
+}
+
+.feed-title {
+  font-size: 0.92rem;
+  color: var(--sys-text-soft);
+  margin: 0 0 1.1rem;
+}
+
+.feed-socials {
+  display: flex;
+  gap: 1.1rem;
+  font-family: var(--sys-mono);
+  font-size: 0.75rem;
+}
+
+.feed-socials a {
+  color: var(--sys-amber);
+  text-decoration: none;
+}
+
+.feed-socials a:hover {
+  text-decoration: underline;
+}
+
+.feed-socials a::before {
+  content: '[';
+  color: var(--sys-text-soft);
+}
+
+.feed-socials a::after {
+  content: ']';
+  color: var(--sys-text-soft);
+}
+
+/* ---------------- right: content panel ---------------- */
+.content {
+  padding: 3rem 2.25rem 3.5rem;
 }
 
 .bio {
-  max-width: 480px;
-  margin: 0 auto 1.5rem;
-  color: var(--color-text);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--sys-text-soft);
+  margin: 0 0 1.75rem;
+  max-width: 640px;
 }
 
-.socials {
-  display: flex;
-  justify-content: center;
-  gap: 1.25rem;
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--sys-panel-border);
+  border: 1px solid var(--sys-panel-border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+  max-width: 640px;
 }
 
-.socials a {
-  color: var(--color-heading);
-  text-decoration: none;
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 1px;
-  transition: border-color 0.2s;
+/* content-columns: side (now/activity) stacks above main by default;
+   becomes a right-hand rail next to main once there's enough width to fit both */
+.content-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  max-width: 640px;
 }
 
-.socials a:hover {
-  border-color: var(--color-heading);
+.content-side {
+  display: contents;
+}
+
+@media (min-width: 1320px) {
+  .content-columns {
+    max-width: 980px;
+    grid-template-columns: minmax(0, 640px) minmax(240px, 300px);
+    align-items: start;
+  }
+
+  .content-main {
+    order: 1;
+  }
+
+  .content-side {
+    display: block;
+    order: 2;
+  }
+}
+
+.stat {
+  background: var(--sys-panel);
+  padding: 0.9rem 0.9rem 0.8rem;
+  border-top: 2px solid var(--sys-amber);
+}
+
+.stat-value {
+  font-family: var(--sys-mono);
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--sys-text);
+  display: block;
+}
+
+.stat-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  color: var(--sys-text-soft);
 }
 
 .section {
-  margin-bottom: 3rem;
+  margin-bottom: 2.75rem;
 }
 
-.section h2 {
-  font-size: 0.85rem;
+.section-head {
+  font-family: var(--sys-mono);
+  font-size: 0.72rem;
+  font-weight: normal;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-text-soft);
-  margin-bottom: 1.25rem;
+  color: var(--sys-text-soft);
+  margin-bottom: 1.4rem;
 }
 
-.job {
-  margin-bottom: 2rem;
+.section-head span {
+  color: var(--sys-amber);
 }
 
-.job:last-child {
-  margin-bottom: 0;
+.log {
+  position: relative;
+  padding-left: 1.5rem;
 }
 
-.job-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
-  flex-wrap: wrap;
+.log::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--sys-panel-border);
 }
 
-.job-role {
+.entry {
+  position: relative;
+  padding-bottom: 1.75rem;
+}
+
+.entry:last-child {
+  padding-bottom: 0;
+}
+
+.entry::before {
+  content: '';
+  position: absolute;
+  left: -1.5rem;
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  background: var(--sys-ground);
+  border: 2px solid var(--sys-amber);
+  border-radius: 2px;
+}
+
+.timestamp {
+  font-family: var(--sys-mono);
+  font-size: 0.72rem;
+  color: var(--sys-amber);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.3rem;
+}
+
+.role {
   font-weight: 600;
-  color: var(--color-heading);
+  font-size: 0.98rem;
 }
 
-.job-company {
-  color: var(--color-text-soft);
+.company {
+  color: var(--sys-text-soft);
+  font-weight: 400;
 }
 
-.job-period {
-  font-size: 0.85rem;
-  color: var(--color-text-soft);
-  white-space: nowrap;
+.location {
+  font-family: var(--sys-mono);
+  font-size: 0.7rem;
+  color: var(--sys-text-soft);
+  margin: 0.2rem 0 0.7rem;
 }
 
-.job-location {
-  font-size: 0.85rem;
-  color: var(--color-text-soft);
-  margin-bottom: 0.5rem;
-}
-
-.job-bullets {
+.bullets {
+  margin: 0;
   padding-left: 1.1rem;
 }
 
-.job-bullets li {
-  margin-bottom: 0.4rem;
+.bullets li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+  font-size: 0.9rem;
+  color: var(--sys-text);
 }
 
-.job-bullets li:last-child {
+.bullets li::marker {
+  color: var(--sys-amber);
+}
+
+.bullets li:last-child {
   margin-bottom: 0;
 }
 
-.skills {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  column-gap: 1.5rem;
-  row-gap: 0.6rem;
+.chip-group {
+  margin-bottom: 1rem;
 }
 
-.skills dt {
-  font-weight: 600;
-  color: var(--color-heading);
-  white-space: nowrap;
+.chip-group:last-child {
+  margin-bottom: 0;
 }
 
-.skills dd {
-  margin: 0;
-  color: var(--color-text);
+.chip-label {
+  font-family: var(--sys-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sys-text-soft);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  font-family: var(--sys-mono);
+  font-size: 0.78rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--sys-panel-border);
+  border-radius: 4px;
+  background: var(--sys-panel);
+  color: var(--sys-text);
 }
 
 .projects {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
+}
+
+.project {
+  background: var(--sys-panel);
+  border: 1px solid var(--sys-panel-border);
+  border-left: 2px solid var(--sys-amber);
+  border-radius: 4px;
+  padding: 1rem 1.1rem;
 }
 
 .project h3 {
+  font-family: var(--sys-mono);
+  font-size: 0.92rem;
   font-weight: 600;
-  color: var(--color-heading);
-  margin-bottom: 0.25rem;
+  margin: 0 0 0.4rem;
+}
+
+.project p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--sys-text-soft);
+  line-height: 1.6;
 }
 
 .edu-school {
   font-weight: 600;
-  color: var(--color-heading);
+  font-size: 0.95rem;
 }
 
 .edu-detail {
-  font-size: 0.9rem;
-  color: var(--color-text-soft);
+  font-family: var(--sys-mono);
+  font-size: 0.78rem;
+  color: var(--sys-text-soft);
+  margin-top: 0.25rem;
 }
 
 .footer {
-  text-align: center;
-  padding-top: 2.5rem;
-  border-top: 1px solid var(--color-border);
+  padding-top: 2rem;
+  border-top: 1px solid var(--sys-panel-border);
 }
 
-.copyright {
-  margin-top: 1rem;
+.footer-socials {
+  display: flex;
+  gap: 1.1rem;
+  font-family: var(--sys-mono);
+  font-size: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.footer-socials a {
+  color: var(--sys-amber);
+  text-decoration: none;
+}
+
+.footer-socials a::before {
+  content: '[';
+  color: var(--sys-text-soft);
+}
+
+.footer-socials a::after {
+  content: ']';
+  color: var(--sys-text-soft);
+}
+
+.footer p.copy {
+  font-family: var(--sys-mono);
+  font-size: 0.68rem;
+  color: var(--sys-text-soft);
+  margin: 0;
+}
+
+/* ---------------- responsive: stack on narrow screens ---------------- */
+@media (max-width: 860px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .feed {
+    position: relative;
+    height: 62vh;
+    min-height: 420px;
+    border-right: none;
+    border-bottom: 1px solid var(--sys-panel-border);
+  }
+
+  .content {
+    padding: 2.25rem 1.35rem 3rem;
+    max-width: none;
+  }
+
+  .stats {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .feed-name {
+    font-size: 1.4rem;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------- now panel ---------------- */
+.now-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.now-list li {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  background: var(--sys-panel);
+  border: 1px solid var(--sys-panel-border);
+  border-radius: 4px;
+  padding: 0.7rem 0.9rem;
+}
+
+.now-label {
+  font-family: var(--sys-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sys-amber);
+  flex-shrink: 0;
+  width: 4.5rem;
+}
+
+.now-text {
+  font-size: 0.88rem;
+  color: var(--sys-text-soft);
+}
+
+/* ---------------- activity feed ---------------- */
+.activity-status {
+  font-family: var(--sys-mono);
+  font-size: 0.82rem;
+  color: var(--sys-text-soft);
+}
+
+.activity-total {
   font-size: 0.85rem;
-  color: var(--color-text-soft);
+  color: var(--sys-text-soft);
+  margin-bottom: 0.85rem;
+}
+
+.heatmap {
+  width: 100%;
+}
+
+.heatmap-months {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 0.3rem;
+}
+
+.heatmap-month {
+  flex: 1 1 0;
+  min-width: 0;
+  font-family: var(--sys-mono);
+  font-size: 0.6rem;
+  color: var(--sys-text-soft);
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.heatmap-grid {
+  display: flex;
+  gap: 2px;
+  width: 100%;
+}
+
+.heatmap-week {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 0;
+  gap: 2px;
+}
+
+.heatmap-cell {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 2px;
+  background: var(--heat-0);
+  position: relative;
+}
+
+.heatmap-cell.is-pad {
+  background: transparent !important;
+}
+
+.heatmap-cell:not(.is-pad):hover,
+.heatmap-cell:not(.is-pad):focus-visible {
+  outline: 1px solid var(--sys-text);
+  outline-offset: 1px;
+}
+
+.heatmap-cell:not(.is-pad)::after {
+  content: attr(data-tooltip);
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--sys-panel);
+  border: 1px solid var(--sys-panel-border);
+  color: var(--sys-text);
+  font-family: var(--sys-mono);
+  font-size: 0.68rem;
+  white-space: nowrap;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.heatmap-cell:not(.is-pad):hover::after,
+.heatmap-cell:not(.is-pad):focus-visible::after {
+  display: block;
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+  font-family: var(--sys-mono);
+  font-size: 0.68rem;
+  color: var(--sys-text-soft);
+}
+
+.legend-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
 }
 </style>
