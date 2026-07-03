@@ -25,9 +25,18 @@ const stats = computed(() => [
 ])
 
 const nowItems = [
-  { label: 'building', text: 'Add what you’re currently building' },
-  { label: 'learning', text: 'Add a skill or technology you’re exploring' },
-  { label: 'focus', text: 'Add your current focus area' },
+  {
+    label: 'building',
+    text: 'A Time-Weighted Return (TWR) explainer — breaking down how investment performance is measured independent of cash flow timing.',
+  },
+  {
+    label: 'learning',
+    text: 'Agentic workflows — chaining AI agents and tools together to automate multi-step engineering tasks.',
+  },
+  {
+    label: 'focus',
+    text: 'Applying AI to software engineering — agents, LLM tooling, and where they actually help day-to-day.',
+  },
 ]
 
 interface ContributionDay {
