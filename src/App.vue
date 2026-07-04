@@ -178,8 +178,8 @@ const projects = [
 
     <main class="content">
       <p class="bio">
-        Back end software engineer with {{ yearsExperience }}+ years of experience designing,
-        implementing, and testing applications across the stack. Expertise in C#/.NET development
+        I am a back end software engineer with {{ yearsExperience }}+ years of experience designing,
+        implementing, and testing applications. Expertise in C#/.NET development
         in the financial space.
       </p>
 
@@ -192,7 +192,7 @@ const projects = [
 
       <div class="content-columns">
         <aside class="content-side">
-          <section class="section">
+          <section class="section panel">
             <h2 class="section-head">&lt;<span>now</span>&gt;</h2>
             <ul class="now-list">
               <li v-for="item in nowItems" :key="item.label">
@@ -202,7 +202,7 @@ const projects = [
             </ul>
           </section>
 
-          <section class="section">
+          <section class="section panel">
             <h2 class="section-head">&lt;<span>skills</span>&gt;</h2>
             <div v-for="group in skillGroups" :key="group.label" class="chip-group">
               <span class="chip-label">{{ group.label }}</span>
@@ -411,6 +411,8 @@ const projects = [
 /* ---------------- right: content panel ---------------- */
 .content {
   padding: 3rem 2.25rem 3.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .bio {
@@ -448,8 +450,9 @@ const projects = [
 
 @media (min-width: 1320px) {
   .content-columns {
-    max-width: 980px;
+    max-width: 1040px;
     grid-template-columns: minmax(0, 640px) minmax(240px, 300px);
+    gap: 3rem;
     align-items: start;
   }
 
@@ -486,6 +489,13 @@ const projects = [
 
 .section {
   margin-bottom: 2.75rem;
+}
+
+.panel {
+  margin: 0 0 1.5rem;
+  padding: 1.2rem 1.2rem 1.4rem;
+  border: 1px solid var(--sys-panel-border);
+  background: var(--sys-panel);
 }
 
 .section-head {
