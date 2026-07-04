@@ -305,6 +305,8 @@ const projects = [
   display: grid;
   grid-template-columns: minmax(300px, 38%) 1fr;
   min-height: 100vh;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 /* ---------------- left: photo / feed panel ---------------- */
@@ -411,8 +413,6 @@ const projects = [
 /* ---------------- right: content panel ---------------- */
 .content {
   padding: 3rem 2.25rem 3.5rem;
-  max-width: 1100px;
-  margin: 0 auto;
 }
 
 .bio {
