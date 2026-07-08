@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { geoNaturalEarth1, geoPath } from 'd3-geo'
 import { select } from 'd3-selection'
 import { zoom as d3zoom, zoomIdentity, type D3ZoomEvent } from 'd3-zoom'
+import 'd3-transition'
 import { feature } from 'topojson-client'
 import type { GeometryCollection, Topology } from 'topojson-specification'
 import landTopology from 'world-atlas/land-110m.json'
@@ -41,9 +42,11 @@ const markers = computed(() =>
 const svgRef = ref<SVGSVGElement | null>(null)
 const transform = ref({ x: 0, y: 0, k: 1 })
 
+let zoomBehavior: ReturnType<typeof d3zoom<SVGSVGElement, unknown>> | null = null
+
 onMounted(() => {
   if (!svgRef.value) return
-  const behavior = d3zoom<SVGSVGElement, unknown>()
+  zoomBehavior = d3zoom<SVGSVGElement, unknown>()
     .scaleExtent([1, 8])
     .translateExtent([
       [0, 0],
@@ -53,38 +56,52 @@ onMounted(() => {
       transform.value = { x: event.transform.x, y: event.transform.y, k: event.transform.k }
     })
 
-  select(svgRef.value).call(behavior).call(behavior.transform, zoomIdentity)
+  select(svgRef.value).call(zoomBehavior).call(zoomBehavior.transform, zoomIdentity)
 })
+
+function zoomBy(factor: number) {
+  if (!svgRef.value || !zoomBehavior) return
+  select(svgRef.value).transition().duration(250).call(zoomBehavior.scaleBy, factor)
+}
 </script>
 
 <template>
   <div class="map-wrap">
-    <svg
-      ref="svgRef"
-      class="map-svg"
-      :viewBox="`0 0 ${width} ${height}`"
-      role="img"
-      aria-label="World map with markers for places I've taken photos"
-    >
-      <g :transform="`translate(${transform.x},${transform.y}) scale(${transform.k})`">
-        <path :d="landPath" class="land" />
-        <g
-          v-for="marker in markers"
-          :key="marker.location.id"
-          class="marker"
-          :class="{ 'has-photos': marker.location.photos.length > 0 }"
-          tabindex="0"
-          role="button"
-          :aria-label="`${marker.location.name}${marker.location.photos.length ? ' — view photos' : ' — no photos yet'}`"
-          @click="emit('locationClick', marker.location.id)"
-          @keydown.enter="emit('locationClick', marker.location.id)"
-        >
-          <circle :cx="marker.x" :cy="marker.y" :r="7 / transform.k" class="marker-ring" />
-          <circle :cx="marker.x" :cy="marker.y" :r="3 / transform.k" class="marker-dot" />
+    <div class="map-frame">
+      <svg
+        ref="svgRef"
+        class="map-svg"
+        :viewBox="`0 0 ${width} ${height}`"
+        preserveAspectRatio="xMidYMid slice"
+        role="img"
+        aria-label="World map with markers for places I've taken photos"
+      >
+        <g :transform="`translate(${transform.x},${transform.y}) scale(${transform.k})`">
+          <path :d="landPath" class="land" />
+          <g
+            v-for="marker in markers"
+            :key="marker.location.id"
+            class="marker"
+            :class="{ 'has-photos': marker.location.photos.length > 0 }"
+            tabindex="0"
+            role="button"
+            :aria-label="`${marker.location.name}${marker.location.photos.length ? ' — view photos' : ' — no photos yet'}`"
+            @click="emit('locationClick', marker.location.id)"
+            @keydown.enter="emit('locationClick', marker.location.id)"
+          >
+            <circle :cx="marker.x" :cy="marker.y" :r="20 / transform.k" class="marker-hit" />
+            <circle :cx="marker.x" :cy="marker.y" :r="7 / transform.k" class="marker-ring" />
+            <circle :cx="marker.x" :cy="marker.y" :r="3 / transform.k" class="marker-dot" />
+          </g>
         </g>
-      </g>
-    </svg>
-    <p class="map-hint">scroll or pinch to zoom · click a marker to view photos</p>
+      </svg>
+
+      <div class="zoom-controls">
+        <button type="button" aria-label="Zoom in" @click="zoomBy(1.4)">+</button>
+        <button type="button" aria-label="Zoom out" @click="zoomBy(1 / 1.4)">−</button>
+      </div>
+    </div>
+    <p class="map-hint">pinch/scroll or use the buttons to zoom · tap a marker to view photos</p>
   </div>
 </template>
 
@@ -96,16 +113,60 @@ onMounted(() => {
   overflow: hidden;
 }
 
+.map-frame {
+  position: relative;
+}
+
 .map-svg {
   width: 100%;
-  height: auto;
+  aspect-ratio: 1.92 / 1;
   display: block;
   cursor: grab;
-  touch-action: none;
+  /* allow the browser to handle single-finger vertical scroll natively;
+     d3-zoom still gets pinch (multi-touch) and horizontal drag */
+  touch-action: pan-y;
 }
 
 .map-svg:active {
   cursor: grabbing;
+}
+
+@media (max-width: 640px) {
+  .map-svg {
+    aspect-ratio: 1 / 1.05;
+  }
+}
+
+.marker-hit {
+  fill: transparent;
+}
+
+.zoom-controls {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.zoom-controls button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--sys-panel-border);
+  border-radius: 4px;
+  background: var(--sys-ground);
+  color: var(--sys-text);
+  font-family: var(--sys-mono);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.zoom-controls button:hover,
+.zoom-controls button:focus-visible {
+  border-color: var(--sys-amber);
+  color: var(--sys-amber);
 }
 
 .land {

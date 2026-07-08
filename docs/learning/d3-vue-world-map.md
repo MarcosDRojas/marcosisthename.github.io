@@ -110,6 +110,38 @@ pattern, and it's the standard way to combine D3 with React/Vue/Svelte.
   it's route-level code-splitting (see `src/router/index.ts`), it only loads
   when someone actually visits `/photography` — doesn't affect Landing/Resume.
 
+## Mobile pass: touch-action, tap targets, slice-crop
+
+- **`touch-action: none` was trapping page scroll.** With it set, a single
+  finger landing on the map at all was captured for panning, so the user
+  couldn't scroll past the map on a phone. Fixed with `touch-action: pan-y` —
+  the browser handles single-finger vertical scroll natively (bypassing JS
+  entirely), while pinch and horizontal drag are still left for `d3-zoom` to
+  handle. This is the standard trick for embedding a pan/zoom widget inside
+  a normally-scrolling page.
+- **Tap targets vs. visual size are separate concerns.** The visible marker
+  dot is intentionally small (`3px`/`7px` radius) so it doesn't overwhelm the
+  map, but that's well under the ~44px touch target guideline. Added a third,
+  invisible circle (`fill: transparent`, `r="20/k"`) per marker purely to
+  enlarge the *hit area* without changing what's drawn. Note: SVG hit-testing
+  treats `fill: transparent` as "painted" (clickable) — it's `fill: none`
+  that opts an element out of pointer events, not `transparent`.
+- **Made the map "bigger" on mobile via crop, not by rescaling the whole
+  scene.** The viewBox stays a fixed `960×500` — same projection, same
+  `scale()`, same marker coordinates — on every screen size. What changes is
+  the CSS `aspect-ratio` of the `<svg>` box: a squarer box on narrow screens,
+  combined with `preserveAspectRatio="xMidYMid slice"` (the SVG analog of
+  `object-fit: cover`) instead of the default `"meet"` (the analog of
+  `object-fit: contain`, which would've letterboxed with blank bars instead
+  of enlarging anything). Slice crops the left/right edges and scales the
+  visible portion up to fill the taller box — the net effect is a bigger,
+  more legible map on phones without touching any of the projection math.
+  This works cleanly with `d3-zoom`'s pointer math because `d3.pointer`
+  resolves coordinates through the SVG's actual screen CTM (the current
+  transform matrix, accounting for viewBox + preserveAspectRatio), not a
+  naive pixel-to-unit assumption — so panning/zooming stays accurate even
+  though the rendered box no longer matches the viewBox's own aspect ratio.
+
 ## Gotchas to remember for next time
 
 - Don't call any D3 selection method inside `onMounted` that appends/removes
