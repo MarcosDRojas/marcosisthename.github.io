@@ -15,12 +15,21 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "d3-geo": "^3.1.1",
+    "d3-selection": "^3.0.0",
+    "d3-zoom": "^3.0.0",
+    "topojson-client": "^3.1.0",
     "vue": "^3.5.22",
-    "vue-router": "^4.6.4"
+    "vue-router": "^4.6.4",
+    "world-atlas": "^2.0.2"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.2",
+    "@types/d3-geo": "^3.1.0",
+    "@types/d3-selection": "^3.0.11",
+    "@types/d3-zoom": "^3.0.8",
     "@types/node": "^22.18.6",
+    "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/tsconfig": "^0.8.1",
     "npm-run-all2": "^8.0.4",

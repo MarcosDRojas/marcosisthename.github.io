@@ -1,26 +1,22 @@
 <script setup lang="ts">
-interface Photo {
-  src: string
-  alt: string
-  caption?: string
-}
+import { ref } from 'vue'
+import WorldMap from '../components/WorldMap.vue'
+import PhotoScroll from '../components/PhotoScroll.vue'
 
-// Add entries here as photos go into public/images/photography/
-const photos: Photo[] = []
+const activeLocationId = ref<string | null>(null)
+
+function onLocationClick(id: string) {
+  activeLocationId.value = id
+}
 </script>
 
 <template>
   <main class="page">
     <h1 class="page-head">&lt;<span>photography</span>&gt;</h1>
-    <p class="page-intro">A selection of shots I've taken.</p>
+    <p class="page-intro">Places I've been, and what I saw there.</p>
 
-    <div v-if="photos.length" class="gallery">
-      <figure v-for="photo in photos" :key="photo.src" class="photo">
-        <img :src="photo.src" :alt="photo.alt" loading="lazy" />
-        <figcaption v-if="photo.caption">{{ photo.caption }}</figcaption>
-      </figure>
-    </div>
-    <p v-else class="empty-state">gallery coming soon…</p>
+    <WorldMap @location-click="onLocationClick" />
+    <PhotoScroll :active-location-id="activeLocationId" />
   </main>
 </template>
 
@@ -49,40 +45,5 @@ const photos: Photo[] = []
   font-size: 0.95rem;
   color: var(--sys-text-soft);
   margin-bottom: 2rem;
-}
-
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
-}
-
-.photo {
-  margin: 0;
-  border: 1px solid var(--sys-panel-border);
-  border-radius: 4px;
-  overflow: hidden;
-  background: var(--sys-panel);
-}
-
-.photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  aspect-ratio: 4 / 3;
-}
-
-.photo figcaption {
-  padding: 0.5rem 0.7rem;
-  font-family: var(--sys-mono);
-  font-size: 0.72rem;
-  color: var(--sys-text-soft);
-}
-
-.empty-state {
-  font-family: var(--sys-mono);
-  font-size: 0.82rem;
-  color: var(--sys-text-soft);
 }
 </style>

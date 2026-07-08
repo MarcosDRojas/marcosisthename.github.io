@@ -700,8 +700,10 @@ const skillGroups = [
   .feed {
     position: relative;
     top: 0;
-    height: 62vh;
-    min-height: 420px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    max-height: 70vh;
     border-right: none;
     border-bottom: 1px solid var(--sys-panel-border);
   }
