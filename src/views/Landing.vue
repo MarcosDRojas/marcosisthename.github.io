@@ -41,8 +41,8 @@ const destinations = [
 
     <main class="content">
       <p class="bio">
-        I'm a back end software engineer based in Durham, NC, building C#/.NET applications in the
-        financial space. Outside of work I tinker with side projects and take photos — pick a
+        I'm a software engineer based in Durham, NC, building applications in the
+        financial space. Outside of work I tinker with side projects, take photos and workout — pick a
         section below to dig in.
       </p>
 
