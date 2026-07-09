@@ -9,7 +9,10 @@ import { projects } from '../data/projects'
 
     <div class="projects">
       <article v-for="project in projects" :key="project.name" class="project">
-        <h3>{{ project.name }}</h3>
+        <h3>
+          <a v-if="project.url" :href="project.url" target="_blank" rel="noopener">{{ project.name }}</a>
+          <template v-else>{{ project.name }}</template>
+        </h3>
         <p>{{ project.description }}</p>
       </article>
     </div>
@@ -62,6 +65,15 @@ import { projects } from '../data/projects'
   font-size: 0.92rem;
   font-weight: 600;
   margin: 0 0 0.4rem;
+}
+
+.project h3 a {
+  color: var(--sys-amber);
+  text-decoration: none;
+}
+
+.project h3 a:hover {
+  text-decoration: underline;
 }
 
 .project p {

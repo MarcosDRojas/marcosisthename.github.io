@@ -258,10 +258,15 @@ const skillGroups = [
           </section>
 
           <section class="section">
-            <h2 class="section-head">&lt;<span>projects</span>&gt;</h2>
+            <h2 class="section-head">
+              <RouterLink to="/projects" class="section-head-link">&lt;<span>projects</span>&gt;</RouterLink>
+            </h2>
             <div class="projects">
               <article v-for="project in projects" :key="project.name" class="project">
-                <h3>{{ project.name }}</h3>
+                <h3>
+                  <a v-if="project.url" :href="project.url" target="_blank" rel="noopener">{{ project.name }}</a>
+                  <template v-else>{{ project.name }}</template>
+                </h3>
                 <p>{{ project.description }}</p>
               </article>
             </div>
@@ -500,6 +505,15 @@ const skillGroups = [
   color: var(--sys-amber);
 }
 
+.section-head-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.section-head-link:hover {
+  text-decoration: underline;
+}
+
 .log {
   position: relative;
   padding-left: 1.5rem;
@@ -634,6 +648,15 @@ const skillGroups = [
   font-size: 0.92rem;
   font-weight: 600;
   margin: 0 0 0.4rem;
+}
+
+.project h3 a {
+  color: var(--sys-amber);
+  text-decoration: none;
+}
+
+.project h3 a:hover {
+  text-decoration: underline;
 }
 
 .project p {
