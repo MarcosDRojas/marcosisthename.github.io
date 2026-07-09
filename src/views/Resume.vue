@@ -150,7 +150,7 @@ const skillGroups = [
 <template>
   <div class="shell">
     <div class="feed">
-      <img class="feed-img" src="/images/profile.jpg" alt="Marcos Rojas" />
+      <img class="feed-img" :src="profileImg" alt="Marcos Rojas" />
       <div class="feed-vignette"></div>
       <div class="feed-card">
         <p class="feed-prompt"><span class="dot"></span> status: open to opportunities</p>

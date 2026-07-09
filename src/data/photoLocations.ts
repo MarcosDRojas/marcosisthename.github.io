@@ -12,6 +12,8 @@ export interface PhotoLocation {
   photos: LocationPhoto[]
 }
 
+const imageBase = import.meta.env.BASE_URL
+
 export const photoLocations: PhotoLocation[] = [
   {
     id: 'durham-nc',
@@ -41,7 +43,7 @@ export const photoLocations: PhotoLocation[] = [
     lon: 18.1108,
     photos: [
       {
-        src: '/images/dubrovnik-old-town-wall.jpg',
+        src: `${imageBase}images/dubrovnik-old-town-wall.jpg`,
         alt: 'Stone city walls of Dubrovnik perched on a cliff above the Adriatic Sea',
         caption: 'Old Town walls, Dubrovnik',
       },
