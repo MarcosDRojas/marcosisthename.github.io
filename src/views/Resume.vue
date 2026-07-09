@@ -21,14 +21,13 @@ const yearsExperience = computed(() => {
 
 const stats = computed(() => [
   { value: `${yearsExperience.value}+`, label: 'years experience' },
-  { value: '2', label: 'platform migrations led' },
-  { value: '1000s', label: 'users served at market hours' },
+  { value: '1,000,000s', label: 'users served at market hours' },
 ])
 
 const nowItems = [
   {
     label: 'building',
-    text: 'A Time-Weighted Return (TWR) explainer — breaking down how investment performance is measured independent of cash flow timing.',
+    text: 'A fit ledger - A java api to revamp my Java skills',
   },
   {
     label: 'learning',
@@ -115,17 +114,15 @@ const experience = [
     location: 'Raleigh, NC',
     period: '2023-04 → present',
     bullets: [
-      'Improved code quality by using test-driven development and SOLID principles.',
       'Led migration of multiple repositories from Bitbucket to GitHub, driving adoption of modern CI/CD workflows and improving team collaboration practices.',
-      'Increased the scalability of our applications by migrating from Windows to Pivotal Cloud Foundry based applications to help scale our systems for millions of users.',
-      'Designed and implemented multiple endpoints in C# used by thousands of users for retrieving financial data during market hours.',
-      'Ensured optimal customer experience by addressing bugs in production affecting their experience on the application.',
-      'Led design reviews to adhere to API guidelines set by the architecture team.',
-      'Contributed to our data migration from MongoDB to Aerospike.',
+      'Increased the scalability of our applications by migrating from Windows to Pivotal Cloud Foundry based applications, helping our services scale to serve millions of users during market hours.',
+      'Ensured optimal customer experience by addressing bugs in production affecting their experience on the application. These bugs ranged from affecting 1 to millions of users.',
+      'Led design reviews to adhere to API guidelines set by our architecture team. Allow our application to scale appropriately every day.',
+      'Contributed to our data migration from MongoDB to Aerospike. This is in the effor to save the company money and continue our effort to onboard more users.',
       'Participated in on-call rotation to validate application releases.',
       'Assessed AI agent use cases and coached team members on effective GitHub Copilot usage, improving development speed, code quality, and accuracy.',
-      'Built and maintained Splunk monitoring dashboards and production queries, strengthening observability and reducing operational risk.',
-      'Resolved critical UI performance bottlenecks by introducing batch-based scan queries, eliminating inefficient record-by-record fetching and significantly improving response times.',
+      'Built and maintained Splunk monitoring dashboards and production queries, this strengthening observability and reduced operational risk. Allowing us to peek into how our services where doing in real time.',
+      'Resolved critical UI performance bottlenecks in blazor by introducing batch-based scan queries, eliminating inefficient record-by-record fetching and significantly improving response times.',
     ],
   },
   {
@@ -138,12 +135,12 @@ const experience = [
 ]
 
 const skillGroups = [
-  { label: 'Languages', items: ['C#', '.NET', 'SQL'] },
+  { label: 'Languages', items: ['C#', 'JAVA', 'SQL'] },
   { label: 'Databases', items: ['MongoDB', 'Aerospike', 'PostgreSQL'] },
   { label: 'Cloud & DevOps', items: ['PCF', 'GitHub CI/CD', 'Splunk'] },
-  { label: 'Tools', items: ['Visual Studio', 'Rider', 'VS Code', 'Git'] },
+  { label: 'Tools', items: ['Visual Studio', 'Rider', 'VS Code', 'Git', 'PgAdmin'] },
   { label: 'Frameworks', items: ['Blazor'] },
-  { label: 'AI / Dev Productivity', items: ['MCP Servers', 'AI Agents', 'GitHub Copilot'] },
+  { label: 'AI / Dev Productivity', items: ['MCP Servers', 'AI Agents', 'AI Skills', 'GitHub Copilot', 'Claude'] },
 ]
 
 </script>
@@ -169,7 +166,8 @@ const skillGroups = [
       <p class="bio">
         I am a back end software engineer with {{ yearsExperience }}+ years of experience designing,
         implementing, and testing applications. Expertise in C#/.NET development
-        in the financial space.
+        in the financial space, building services that have served millions of users
+        during market hours.
       </p>
 
       <div class="stats">
@@ -414,7 +412,8 @@ const skillGroups = [
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
   gap: 1px;
   background: var(--sys-panel-border);
   border: 1px solid var(--sys-panel-border);
