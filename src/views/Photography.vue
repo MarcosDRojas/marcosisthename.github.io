@@ -6,7 +6,7 @@ import PhotoScroll from '../components/PhotoScroll.vue'
 const activeLocationId = ref<string | null>(null)
 
 function onLocationClick(id: string) {
-  activeLocationId.value = id
+  activeLocationId.value = activeLocationId.value === id ? null : id
 }
 </script>
 
@@ -15,8 +15,8 @@ function onLocationClick(id: string) {
     <h1 class="page-head">&lt;<span>photography</span>&gt;</h1>
     <p class="page-intro">Places I've been, and what I saw there.</p>
 
-    <WorldMap @location-click="onLocationClick" />
-    <PhotoScroll :active-location-id="activeLocationId" />
+    <WorldMap :active-location-id="activeLocationId" @location-click="onLocationClick" />
+    <PhotoScroll :active-location-id="activeLocationId" @clear="activeLocationId = null" />
   </main>
 </template>
 

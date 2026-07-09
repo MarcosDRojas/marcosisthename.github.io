@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const profileImg = `${import.meta.env.BASE_URL}images/profile.jpg`
+
 const github = 'https://github.com/MarcosDRojas'
 const linkedin = 'https://www.linkedin.com/in/marcosdanielrojas/'
 const email = 'marcos.rojas24@gmail.com'
@@ -25,7 +27,7 @@ const destinations = [
 <template>
   <div class="shell">
     <div class="feed">
-      <img class="feed-img" src="/images/profile.jpg" alt="Marcos Rojas" />
+      <img class="feed-img" :src="profileImg" alt="Marcos Rojas" />
       <div class="feed-vignette"></div>
       <div class="feed-card">
         <p class="feed-prompt"><span class="dot"></span> status: open to opportunities</p>

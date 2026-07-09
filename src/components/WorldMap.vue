@@ -9,6 +9,10 @@ import type { GeometryCollection, Topology } from 'topojson-specification'
 import landTopology from 'world-atlas/land-110m.json'
 import { photoLocations } from '../data/photoLocations'
 
+defineProps<{
+  activeLocationId?: string | null
+}>()
+
 const emit = defineEmits<{
   locationClick: [id: string]
 }>()
@@ -63,6 +67,11 @@ function zoomBy(factor: number) {
   if (!svgRef.value || !zoomBehavior) return
   select(svgRef.value).transition().duration(250).call(zoomBehavior.scaleBy, factor)
 }
+
+function resetView() {
+  if (!svgRef.value || !zoomBehavior) return
+  select(svgRef.value).transition().duration(300).call(zoomBehavior.transform, zoomIdentity)
+}
 </script>
 
 <template>
@@ -72,7 +81,7 @@ function zoomBy(factor: number) {
         ref="svgRef"
         class="map-svg"
         :viewBox="`0 0 ${width} ${height}`"
-        preserveAspectRatio="xMidYMid slice"
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="World map with markers for places I've taken photos"
       >
@@ -82,7 +91,10 @@ function zoomBy(factor: number) {
             v-for="marker in markers"
             :key="marker.location.id"
             class="marker"
-            :class="{ 'has-photos': marker.location.photos.length > 0 }"
+            :class="{
+              'has-photos': marker.location.photos.length > 0,
+              'is-active': marker.location.id === activeLocationId,
+            }"
             tabindex="0"
             role="button"
             :aria-label="`${marker.location.name}${marker.location.photos.length ? ' — view photos' : ' — no photos yet'}`"
@@ -99,9 +111,13 @@ function zoomBy(factor: number) {
       <div class="zoom-controls">
         <button type="button" aria-label="Zoom in" @click="zoomBy(1.4)">+</button>
         <button type="button" aria-label="Zoom out" @click="zoomBy(1 / 1.4)">−</button>
+        <button type="button" aria-label="Reset zoom" @click="resetView">↺</button>
       </div>
     </div>
-    <p class="map-hint">pinch/scroll or use the buttons to zoom · tap a marker to view photos</p>
+    <p class="map-hint">
+      {{ photoLocations.length }} location{{ photoLocations.length === 1 ? '' : 's' }} · pinch/scroll
+      or use the buttons to zoom · tap a marker to view photos
+    </p>
   </div>
 </template>
 
@@ -133,7 +149,7 @@ function zoomBy(factor: number) {
 
 @media (max-width: 640px) {
   .map-svg {
-    aspect-ratio: 1 / 1.05;
+    aspect-ratio: 4 / 3;
   }
 }
 
@@ -203,6 +219,12 @@ function zoomBy(factor: number) {
 .marker:focus-visible .marker-ring {
   fill: var(--sys-amber);
   fill-opacity: 0.4;
+}
+
+.marker.is-active .marker-ring {
+  fill: var(--sys-amber);
+  fill-opacity: 0.6;
+  stroke-width: 1.5;
 }
 
 .map-hint {

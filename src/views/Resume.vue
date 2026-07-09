@@ -2,6 +2,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { projects } from '../data/projects'
 
+const profileImg = `${import.meta.env.BASE_URL}images/profile.jpg`
+
 const github = 'https://github.com/MarcosDRojas'
 const linkedin = 'https://www.linkedin.com/in/marcosdanielrojas/'
 const email = 'marcos.rojas24@gmail.com'

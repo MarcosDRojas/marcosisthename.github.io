@@ -12,26 +12,20 @@ export interface PhotoLocation {
   photos: LocationPhoto[]
 }
 
-// Placeholder data — swap in real coordinates/photos once available.
 export const photoLocations: PhotoLocation[] = [
   {
     id: 'durham-nc',
     name: 'Durham, NC',
     lat: 35.994,
     lon: -78.8986,
-    photos: [
-      { src: '/images/profile.jpg', alt: 'Placeholder photo from Durham, NC' },
-    ],
+    photos: [],
   },
   {
     id: 'new-york-ny',
     name: 'New York, NY',
     lat: 40.7128,
     lon: -74.006,
-    photos: [
-      { src: '/images/profile.jpg', alt: 'Placeholder photo from New York, NY' },
-      { src: '/images/profile.jpg', alt: 'Placeholder photo from New York, NY' },
-    ],
+    photos: [],
   },
   {
     id: 'mexico-city',
@@ -39,6 +33,19 @@ export const photoLocations: PhotoLocation[] = [
     lat: 19.4326,
     lon: -99.1332,
     photos: [],
+  },
+  {
+    id: 'dubrovnik-croatia',
+    name: 'Dubrovnik, Croatia',
+    lat: 42.6407,
+    lon: 18.1108,
+    photos: [
+      {
+        src: '/images/dubrovnik-old-town-wall.jpg',
+        alt: 'Stone city walls of Dubrovnik perched on a cliff above the Adriatic Sea',
+        caption: 'Old Town walls, Dubrovnik',
+      },
+    ],
   },
 ]
 

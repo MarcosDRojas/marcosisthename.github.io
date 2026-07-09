@@ -41,50 +41,74 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Marcos Rojas",
-        "url": "https://marcosdrojas.github.io/marcosisthename.github.io/",
-        "image": "https://marcosdrojas.github.io/marcosisthename.github.io/images/profile.jpg",
-        "jobTitle": "Software Engineer II",
-        "worksFor": {
-          "@type": "Organization",
-          "name": "Charles Schwab"
-        },
-        "alumniOf": {
-          "@type": "CollegeOrUniversity",
-          "name": "North Carolina State University"
-        },
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Durham",
-          "addressRegion": "NC",
-          "addressCountry": "US"
-        },
-        "email": "mailto:marcos.rojas24@gmail.com",
-        "sameAs": [
-          "https://github.com/MarcosDRojas",
-          "https://www.linkedin.com/in/marcosdanielrojas/"
-        ],
-        "knowsAbout": [
-          "C#", ".NET", "SQL",
-          "MongoDB", "Aerospike", "PostgreSQL",
-          "Pivotal Cloud Foundry", "GitHub CI/CD", "Splunk",
-          "Blazor",
-          "MCP Servers", "AI Agents", "GitHub Copilot"
-        ],
-        "hasOccupation": [
+        "@graph": [
           {
-            "@type": "Occupation",
-            "name": "Software Engineer II",
-            "occupationLocation": { "@type": "City", "name": "Raleigh, NC" },
-            "startDate": "2023-04"
+            "@type": "Person",
+            "name": "Marcos Rojas",
+            "url": "https://marcosdrojas.github.io/marcosisthename.github.io/",
+            "image": "https://marcosdrojas.github.io/marcosisthename.github.io/images/profile.jpg",
+            "jobTitle": "Software Engineer II",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Charles Schwab"
+            },
+            "alumniOf": {
+              "@type": "CollegeOrUniversity",
+              "name": "North Carolina State University"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Durham",
+              "addressRegion": "NC",
+              "addressCountry": "US"
+            },
+            "email": "mailto:marcos.rojas24@gmail.com",
+            "sameAs": [
+              "https://github.com/MarcosDRojas",
+              "https://www.linkedin.com/in/marcosdanielrojas/"
+            ],
+            "knowsAbout": [
+              "C#", "Java", ".NET", "SQL",
+              "MongoDB", "Aerospike", "PostgreSQL",
+              "Pivotal Cloud Foundry", "GitHub CI/CD", "Splunk", "PgAdmin",
+              "Blazor",
+              "MCP Servers", "AI Agents", "AI Skills", "GitHub Copilot", "Claude"
+            ],
+            "hasOccupation": [
+              {
+                "@type": "Occupation",
+                "name": "Software Engineer II",
+                "occupationLocation": { "@type": "City", "name": "Raleigh, NC" },
+                "startDate": "2023-04"
+              },
+              {
+                "@type": "Occupation",
+                "name": "Software Engineer I",
+                "occupationLocation": { "@type": "City", "name": "Raleigh, NC" },
+                "startDate": "2020-06",
+                "endDate": "2023-04"
+              }
+            ]
           },
           {
-            "@type": "Occupation",
-            "name": "Software Engineer I",
-            "occupationLocation": { "@type": "City", "name": "Raleigh, NC" },
-            "startDate": "2020-06",
-            "endDate": "2023-04"
+            "@type": "SoftwareSourceCode",
+            "name": "blockchain-ledger",
+            "description": "A blockchain-inspired ledger system to track peer-to-peer money transfers, focusing on immutability, hashing, and transaction validation.",
+            "author": { "@type": "Person", "name": "Marcos Rojas" }
+          },
+          {
+            "@type": "SoftwareSourceCode",
+            "name": "lineage-ui",
+            "description": "A Blazor-based internal tool to manage service account permissions across lower and production environments, improving access visibility and security auditing.",
+            "author": { "@type": "Person", "name": "Marcos Rojas" }
+          },
+          {
+            "@type": "SoftwareSourceCode",
+            "name": "fit-ledger",
+            "description": "Backend REST API for tracking workouts and fitness progress, built with Java 21 and Spring Boot. Supports logging exercises, workout templates, personal bests, and body metrics.",
+            "codeRepository": "https://github.com/MarcosDRojas/fit-ledger",
+            "programmingLanguage": "Java",
+            "author": { "@type": "Person", "name": "Marcos Rojas" }
           }
         ]
       }
@@ -98,7 +122,8 @@
         <p>
           Back end software engineer with 6+ years of experience designing, implementing, and
           testing applications across the stack. Expertise in C#/.NET development in the
-          financial space. Based in Durham, NC.
+          financial space, building services that have served millions of users during market
+          hours. Based in Durham, NC.
         </p>
         <p>
           <a href="https://github.com/MarcosDRojas">GitHub</a> ·
@@ -109,8 +134,7 @@
         <h2>Now</h2>
         <ul>
           <li>
-            <strong>Building:</strong> A Time-Weighted Return (TWR) explainer — breaking down how
-            investment performance is measured independent of cash flow timing.
+            <strong>Building:</strong> A fit ledger - A java api to revamp my Java skills.
           </li>
           <li>
             <strong>Learning:</strong> Agentic workflows — chaining AI agents and tools together to
@@ -124,12 +148,12 @@
 
         <h2>Skills</h2>
         <ul>
-          <li><strong>Languages:</strong> C#, .NET, SQL</li>
+          <li><strong>Languages:</strong> C#, JAVA, SQL</li>
           <li><strong>Databases:</strong> MongoDB, Aerospike, PostgreSQL</li>
           <li><strong>Cloud &amp; DevOps:</strong> PCF, GitHub CI/CD, Splunk</li>
-          <li><strong>Tools:</strong> Visual Studio, Rider, VS Code, Git</li>
+          <li><strong>Tools:</strong> Visual Studio, Rider, VS Code, Git, PgAdmin</li>
           <li><strong>Frameworks:</strong> Blazor</li>
-          <li><strong>AI / Dev Productivity:</strong> MCP Servers, AI Agents, GitHub Copilot</li>
+          <li><strong>AI / Dev Productivity:</strong> MCP Servers, AI Agents, AI Skills, GitHub Copilot, Claude</li>
         </ul>
 
         <h2>Experience</h2>
@@ -137,35 +161,42 @@
           <h3>Software Engineer II — Charles Schwab</h3>
           <p>Raleigh, NC · 2023-04 → present</p>
           <ul>
-            <li>Improved code quality by using test-driven development and SOLID principles.</li>
             <li>
               Led migration of multiple repositories from Bitbucket to GitHub, driving adoption of
               modern CI/CD workflows and improving team collaboration practices.
             </li>
             <li>
               Increased the scalability of our applications by migrating from Windows to Pivotal
-              Cloud Foundry based applications to help scale our systems for millions of users.
+              Cloud Foundry based applications, helping our services scale to serve millions of
+              users during market hours.
             </li>
             <li>
-              Designed and implemented multiple endpoints in C# used by thousands of users for
-              retrieving financial data during market hours.
+              Ensured optimal customer experience by addressing bugs in production affecting their
+              experience on the application. These bugs ranged from affecting 1 to millions of
+              users.
             </li>
-            <li>Ensured optimal customer experience by addressing bugs in production affecting their experience on the application.</li>
-            <li>Led design reviews to adhere to API guidelines set by the architecture team.</li>
-            <li>Contributed to our data migration from MongoDB to Aerospike.</li>
+            <li>
+              Led design reviews to adhere to API guidelines set by our architecture team. Allow
+              our application to scale appropriately every day.
+            </li>
+            <li>
+              Contributed to our data migration from MongoDB to Aerospike. This is in the effor to
+              save the company money and continue our effort to onboard more users.
+            </li>
             <li>Participated in on-call rotation to validate application releases.</li>
             <li>
               Assessed AI agent use cases and coached team members on effective GitHub Copilot
               usage, improving development speed, code quality, and accuracy.
             </li>
             <li>
-              Built and maintained Splunk monitoring dashboards and production queries,
-              strengthening observability and reducing operational risk.
+              Built and maintained Splunk monitoring dashboards and production queries, this
+              strengthening observability and reduced operational risk. Allowing us to peek into
+              how our services where doing in real time.
             </li>
             <li>
-              Resolved critical UI performance bottlenecks by introducing batch-based scan queries,
-              eliminating inefficient record-by-record fetching and significantly improving response
-              times.
+              Resolved critical UI performance bottlenecks in blazor by introducing batch-based
+              scan queries, eliminating inefficient record-by-record fetching and significantly
+              improving response times.
             </li>
           </ul>
         </article>
@@ -187,6 +218,14 @@
           <p>
             Developed a Blazor-based internal tool to manage service account permissions across
             lower and production environments, improving access visibility and security auditing.
+          </p>
+        </article>
+        <article>
+          <h3><a href="https://github.com/MarcosDRojas/fit-ledger">fit-ledger</a></h3>
+          <p>
+            Backend REST API for tracking workouts and fitness progress, built with Java 21 and
+            Spring Boot. Supports logging exercises, workout templates, personal bests, and body
+            metrics.
           </p>
         </article>
 
